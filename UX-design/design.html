@@ -1,0 +1,391 @@
+<html><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <style>
+        ::-webkit-scrollbar { display: none;}
+        body { font-family: 'Inter', monospace;
+            background: radial-gradient(circle at center, #000000, var(--dark-accent, #001a1a));
+        }
+        .neon-border {
+            position: relative;
+            border-radius: 8px;
+        }
+        .neon-border::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 1px solid var(--neon-color);
+            pointer-events: none;
+            animation: neonPulse 2s infinite;
+            border-radius: 8px;
+        }
+        @keyframes neonPulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+    </style>
+    <script>tailwind.config = {
+  "theme": {
+    "extend": {
+      "colors": {
+        "youtube": "#FF0000",
+        "cyber": {
+          "dark": "#000000",
+          "light": "#e2e8f0",
+          "accent": {
+            "blue": "#00f2fe",
+            "purple": "#8000ff",
+            "green": "#00ff9d",
+            "pink": "#ff00c1"
+          }
+        }
+      },
+      "boxShadow": {
+        "neon": "0 0 5px var(--neon-color), 0 0 20px var(--neon-color)"
+      },
+      "fontFamily": {
+        "sans": [
+          "Inter",
+          "sans-serif"
+        ]
+      }
+    }
+  }
+};</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;500;600;700;800;900&amp;display=swap"><style>
+  .highlighted-section {
+    outline: 2px solid #3F20FB;
+    background-color: rgba(63, 32, 251, 0.1);
+  }
+
+  .edit-button {
+    position: absolute;
+    z-index: 1000;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  html, body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  </style></head>
+<body class="bg-cyber-dark text-cyber-light">
+
+<!-- Navigation Bar -->
+<nav id="header" class="bg-black border-b border-cyber-accent/30 px-6 py-4">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <i class="fa-brands fa-youtube text-youtube text-2xl"></i>
+            <h1 class="text-xl font-bold text-cyber-accent tracking-wider">YouTube LLM Analyzer</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="flex space-x-2">
+                <button onclick="changeAccent('#00f2fe')" class="w-6 h-6 rounded-full bg-[#00f2fe]"></button>
+                <button onclick="changeAccent('#8000ff')" class="w-6 h-6 rounded-full bg-[#8000ff]"></button>
+                <button onclick="changeAccent('#00ff9d')" class="w-6 h-6 rounded-full bg-[#00ff9d]"></button>
+                <button onclick="changeAccent('#ff00c1')" class="w-6 h-6 rounded-full bg-[#ff00c1]"></button>
+            </div>
+            <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fa-solid fa-moon text-gray-600 dark:text-gray-300"></i>
+            </button>
+            <div class="relative">
+                <button id="profileBtn" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" class="w-8 h-8 rounded-full">
+                    <i class="fa-solid fa-chevron-down text-sm text-gray-500"></i>
+                </button>
+                <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-darkCard rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                    <span class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
+                        <i class="fa-solid fa-key mr-2"></i>View API Keys
+                    </span>
+                    <span class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
+                        <i class="fa-solid fa-download mr-2"></i>Download Telemetry
+                    </span>
+                    <span class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
+                        <i class="fa-solid fa-cog mr-2"></i>Settings
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Dashboard -->
+<main id="dashboard" class="p-6 max-w-7xl mx-auto">
+    
+    <!-- Analytics Summary Cards -->
+    <section id="summary-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-black/50 backdrop-blur-sm p-6 rounded-lg border neon-border hover:border-cyber-accent transition-colors">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Watch Time This Month</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">142.5h</p>
+                </div>
+                <i class="fa-solid fa-clock text-youtube text-2xl"></i>
+            </div>
+        </div>
+        <div class="bg-black/50 backdrop-blur-sm p-6 rounded-lg border neon-border hover:border-cyber-accent transition-colors">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Most Watched Genre</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">Education</p>
+                </div>
+                <i class="fa-solid fa-graduation-cap text-youtube text-2xl"></i>
+            </div>
+        </div>
+        <div class="bg-black/50 backdrop-blur-sm p-6 rounded-lg border neon-border hover:border-cyber-accent transition-colors">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Top Channel</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">TechCrunch</p>
+                </div>
+                <i class="fa-solid fa-star text-youtube text-2xl"></i>
+            </div>
+        </div>
+        <div class="bg-black/50 backdrop-blur-sm p-6 rounded-lg border neon-border hover:border-cyber-accent transition-colors">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Videos Watched</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">1,247</p>
+                </div>
+                <i class="fa-solid fa-play text-youtube text-2xl"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section id="charts-section" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div class="bg-black/50 backdrop-blur-sm p-6 rounded-lg border neon-border hover:border-cyber-accent transition-colors">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Daily Watch Time</h3>
+            <div class="h-64">
+                <canvas id="dailyChart"></canvas>
+            </div>
+        </div>
+        <div class="bg-black/50 backdrop-blur-sm p-6 rounded-lg border neon-border hover:border-cyber-accent transition-colors">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Monthly Trends</h3>
+            <div class="h-64">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- LLM Insights Panel -->
+    <section id="llm-insights" class="bg-black/50 backdrop-blur-sm p-6 rounded-lg border neon-border mb-8">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-brain text-youtube text-xl"></i>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">AI Insights</h3>
+                <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs px-2 py-1 rounded-full">UX Pilot AI</span>
+            </div>
+            <button class="bg-cyber-accent text-black px-6 py-3 hover:bg-cyber-accent/80 transition-colors">
+                <i class="fa-solid fa-refresh mr-2"></i>Re-run Analysis
+            </button>
+        </div>
+        <div class="space-y-4">
+            <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Content Distribution</h4>
+                <p class="text-gray-600 dark:text-gray-300">You watched 42% educational content, 31% entertainment, 18% tech reviews, and 9% music videos this month.</p>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Viewing Patterns</h4>
+                <p class="text-gray-600 dark:text-gray-300">Your peak viewing time is between 8-10 PM, with 67% of content consumed on weekends.</p>
+            </div>
+            <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg border-l-4 border-yellow-400">
+                <h4 class="font-medium text-gray-900 dark:text-white mb-2">Recommendation</h4>
+                <p class="text-gray-600 dark:text-gray-300">Consider diversifying your content mix and reducing late-night binge-watching sessions for better sleep hygiene.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Configuration Section -->
+    <section id="configuration" class="bg-black/50 backdrop-blur-sm p-6 rounded-lg border neon-border mb-8">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Configuration</h3>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">LLM Provider</label>
+                    <select class="w-full p-3 border border-cyber-accent/30 bg-black/50 text-cyber-light focus:border-cyber-accent">
+                        <option>UX Pilot AI</option>
+                        <option>UX Pilot</option>
+                        <option>Gemini</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">API Key</label>
+                    <input type="password" placeholder="Enter your API key" class="w-full p-3 border border-cyber-accent/30 bg-black/50 text-cyber-light focus:border-cyber-accent">
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Content Categories</label>
+                    <div class="flex flex-wrap gap-2 mb-2">
+                        <span class="bg-youtube/10 text-youtube px-3 py-1 rounded-full text-sm">Education</span>
+                        <span class="bg-youtube/10 text-youtube px-3 py-1 rounded-full text-sm">Tech</span>
+                        <span class="bg-youtube/10 text-youtube px-3 py-1 rounded-full text-sm">Entertainment</span>
+                    </div>
+                    <input type="text" placeholder="Add new category" class="w-full p-3 border border-cyber-accent/30 bg-black/50 text-cyber-light focus:border-cyber-accent">
+                </div>
+                <div class="space-y-3">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="rounded text-youtube">
+                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Track specific keywords</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="rounded text-youtube">
+                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Group short vs long videos</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="rounded text-youtube">
+                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Enable telemetry logging</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6 flex space-x-4">
+            <button class="bg-cyber-accent text-black px-6 py-3 hover:bg-cyber-accent/80 transition-colors">Save &amp; Test</button>
+            <button class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Reset</button>
+        </div>
+    </section>
+
+    <!-- Telemetry Log Viewer -->
+    <section id="telemetry-logs" class="bg-black/50 backdrop-blur-sm p-6 rounded-lg border neon-border">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Telemetry Logs</h3>
+            <button id="toggleLogs" class="text-youtube hover:text-red-600">
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+        </div>
+        <div id="logsContent" class="hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50 dark:bg-gray-800">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-gray-700 dark:text-gray-300">Timestamp</th>
+                            <th class="px-4 py-3 text-left text-gray-700 dark:text-gray-300">Provider</th>
+                            <th class="px-4 py-3 text-left text-gray-700 dark:text-gray-300">Prompt</th>
+                            <th class="px-4 py-3 text-left text-gray-700 dark:text-gray-300">Response</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                        <tr>
+                            <td class="px-4 py-3 text-gray-600 dark:text-gray-400">2024-01-15 14:30</td>
+                            <td class="px-4 py-3"><span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded text-xs">UX Pilot AI</span></td>
+                            <td class="px-4 py-3"><button class="text-youtube hover:underline">View Prompt</button></td>
+                            <td class="px-4 py-3"><button class="text-youtube hover:underline">View Response</button></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 text-gray-600 dark:text-gray-400">2024-01-14 09:15</td>
+                            <td class="px-4 py-3"><span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-xs">UX Pilot</span></td>
+                            <td class="px-4 py-3"><button class="text-youtube hover:underline">View Prompt</button></td>
+                            <td class="px-4 py-3"><button class="text-youtube hover:underline">View Response</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+// Charts
+const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+new Chart(dailyCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+            data: [4.2, 3.8, 5.1, 4.5, 6.2, 8.1, 7.3],
+            backgroundColor: '#FF0000',
+            borderRadius: 4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { 
+            y: { 
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(0, 255, 0, 0.1)'
+                },
+                ticks: {
+                    color: '#e2e8f0'
+                }
+            },
+            x: {
+                grid: {
+                    color: 'rgba(0, 255, 0, 0.1)'
+                },
+                ticks: {
+                    color: '#e2e8f0'
+                }
+            }
+        }
+    }
+});
+
+const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+new Chart(monthlyCtx, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            data: [120, 135, 142, 128, 155, 142],
+            borderColor: '#FF0000',
+            backgroundColor: 'rgba(255, 0, 0, 0.1)',
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } }
+    }
+});
+
+// Interactions
+document.getElementById('profileBtn').addEventListener('click', () => {
+    document.getElementById('profileDropdown').classList.toggle('hidden');
+});
+
+document.getElementById('toggleLogs').addEventListener('click', () => {
+    const content = document.getElementById('logsContent');
+    const icon = document.querySelector('#toggleLogs i');
+    content.classList.toggle('hidden');
+    icon.classList.toggle('fa-chevron-down');
+    icon.classList.toggle('fa-chevron-up');
+});
+</script>
+
+<script>
+function changeAccent(color) {
+    document.documentElement.style.setProperty('--neon-color', color);
+    // Calculate dark accent color (20% of the original color)
+    const darkAccent = color.replace(/^#/, '').match(/.{2}/g)
+        .map(hex => Math.floor(parseInt(hex, 16) * 0.2).toString(16).padStart(2, '0'))
+        .join('');
+    document.documentElement.style.setProperty('--dark-accent', '#' + darkAccent);
+    const elements = document.querySelectorAll('.neon-border');
+    elements.forEach(el => {
+        el.style.setProperty('--neon-color', color);
+    });
+}
+// Set default accent
+changeAccent('#00f2fe');
+</script>
+
+
+</body></html>

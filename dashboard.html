@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Youtube Usage Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- <script src="vendor/chart.min.js"></script> -->
+  <!-- <script src="vendor/fontawesome.min.js"></script> -->
+  <link rel="stylesheet" href="assets/fonts/inter.css">
+</head>
+<body class="bg-cyber-dark text-cyber-light">
+
+<!-- Navigation Bar -->
+<nav id="header" class="bg-black border-b px-6 py-4">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <i class="fa-brands fa-youtube text-youtube text-2xl"></i>
+            <h1 class="text-xl font-bold text-cyber-accent tracking-wider">Youtube Usage Dashboard</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="accent-picker">
+                <button class="accent-btn-circle" data-color="#00f2fe" style="background:#00f2fe"></button>
+                <button class="accent-btn-circle" data-color="#8000ff" style="background:#8000ff"></button>
+                <button class="accent-btn-circle" data-color="#00ff9d" style="background:#00ff9d"></button>
+                <button class="accent-btn-circle" data-color="#ff00c1" style="background:#ff00c1"></button>
+            </div>
+            <button id="themeToggle" class="p-2 rounded-lg">
+                <i class="fa-solid fa-moon text-gray-600"></i>
+            </button>
+            <div class="relative">
+                <button id="profileBtn" class="flex items-center space-x-2 p-2 rounded-lg">
+                    <img src="assets/avatar-1.jpg" class="w-8 h-8 rounded-full">
+                    <i class="fa-solid fa-chevron-down text-sm text-gray-500"></i>
+                </button>
+                <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-50">
+                    <span class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                        <i class="fa-solid fa-key mr-2"></i>View API Keys
+                    </span>
+                    <span class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                        <i class="fa-solid fa-download mr-2"></i>Download Telemetry
+                    </span>
+                    <span class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                        <i class="fa-solid fa-cog mr-2"></i>Settings
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Dashboard -->
+<main id="dashboard" class="p-6 max-w-7xl mx-auto">
+    <!-- Analytics Summary Cards -->
+    <section id="summary-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="summary-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Watch Time This Month</p>
+                    <p class="text-2xl font-bold text-gray-900">142.5h</p>
+                </div>
+                <i class="fa-solid fa-clock text-youtube text-2xl"></i>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Most Watched Genre</p>
+                    <p class="text-2xl font-bold text-gray-900">Education</p>
+                </div>
+                <i class="fa-solid fa-graduation-cap text-youtube text-2xl"></i>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Top Channel</p>
+                    <p class="text-2xl font-bold text-gray-900">TechCrunch</p>
+                </div>
+                <i class="fa-solid fa-star text-youtube text-2xl"></i>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Videos Watched</p>
+                    <p class="text-2xl font-bold text-gray-900">1,247</p>
+                </div>
+                <i class="fa-solid fa-play text-youtube text-2xl"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section id="charts-section" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div class="chart-card">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Daily Watch Time</h3>
+            <div class="h-64">
+                <canvas id="dailyChart"></canvas>
+            </div>
+        </div>
+        <div class="chart-card">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Monthly Trends</h3>
+            <div class="h-64">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- LLM Insights Panel -->
+    <section id="llm-insights" class="insights-card mb-8">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-brain text-youtube text-xl"></i>
+                <h3 class="text-lg font-semibold text-gray-900">AI Insights</h3>
+                <span class="provider-badge">UX Pilot AI</span>
+            </div>
+            <button class="accent-btn" id="rerun-analysis-btn">
+                <i class="fa-solid fa-refresh mr-2"></i>Re-run Analysis
+            </button>
+        </div>
+        <!-- Tabs -->
+        <div class="insights-tabs flex space-x-2 mb-4">
+            <button class="insights-tab active" data-tab="overview">Overview</button>
+            <button class="insights-tab" data-tab="charts">Charts</button>
+            <button class="insights-tab" data-tab="details">Details</button>
+        </div>
+        <!-- Tab Contents -->
+        <div class="insights-tab-content" id="insights-overview">
+            <div id="insights-markdown" class="space-y-4">
+                <div class="insight-box">
+                    <pre style="white-space:pre-wrap;color:#fff;font-family:inherit;">No analysis yet. Run analysis to see insights.</pre>
+                </div>
+            </div>
+        </div>
+        <div class="insights-tab-content hidden" id="insights-charts">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="chart-card">
+                    <h4 class="font-medium mb-2">Category-wise Watch Time</h4>
+                    <canvas id="categoryWatchTimeChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h4 class="font-medium mb-2">Volume vs Variety</h4>
+                    <canvas id="volumeVarietyChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h4 class="font-medium mb-2">Not Good Categories</h4>
+                    <canvas id="notGoodCategoriesChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h4 class="font-medium mb-2">Videos per Category</h4>
+                    <canvas id="videosPerCategoryChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h4 class="font-medium mb-2">Search Pattern</h4>
+                    <canvas id="searchPatternChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="insights-tab-content hidden" id="insights-details">
+            <div class="insight-box">
+                <pre id="insights-raw-json" style="white-space:pre-wrap;color:#fff;font-family:inherit;">No details yet.</pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Configuration Section -->
+    <section id="configuration" class="config-card mb-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Configuration</h3>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">LLM Provider</label>
+                    <select class="w-full p-3 border bg-black/50 text-cyber-light" id="llm-provider-select">
+                        <option value="openai">OpenAI</option>
+                        <option value="claude">Claude</option>
+                        <option value="gemini">Gemini</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <input type="password" placeholder="Enter your API key" class="w-full p-3 border bg-black/50 text-cyber-light">
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Content Categories</label>
+                    <div class="flex flex-wrap gap-2 mb-2">
+                        <span class="category-tag">Education</span>
+                        <span class="category-tag">Tech</span>
+                        <span class="category-tag">Entertainment</span>
+                    </div>
+                    <input type="text" placeholder="Add new category" class="w-full p-3 border bg-black/50 text-cyber-light">
+                </div>
+                <div class="space-y-3">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="rounded text-youtube">
+                        <span class="ml-2 text-sm text-gray-700">Track specific keywords</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="rounded text-youtube">
+                        <span class="ml-2 text-sm text-gray-700">Group short vs long videos</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="rounded text-youtube">
+                        <span class="ml-2 text-sm text-gray-700">Enable telemetry logging</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6 flex space-x-4">
+            <button class="accent-btn" id="save-test-btn">Save &amp; Test</button>
+            <button class="reset-btn">Reset</button>
+        </div>
+    </section>
+
+    <!-- Telemetry Log Viewer -->
+    <section id="telemetry-logs" class="telemetry-card">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Telemetry Logs</h3>
+            <button id="toggleLogs" class="text-youtube">
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+        </div>
+        <div id="logsContent" class="hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-gray-700">Timestamp</th>
+                            <th class="px-4 py-3 text-left text-gray-700">Provider</th>
+                            <th class="px-4 py-3 text-left text-gray-700">Prompt</th>
+                            <th class="px-4 py-3 text-left text-gray-700">Response</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-4 py-3 text-gray-600">2024-01-15 14:30</td>
+                            <td class="px-4 py-3"><span class="provider-badge">UX Pilot AI</span></td>
+                            <td class="px-4 py-3"><button class="text-youtube">View Prompt</button></td>
+                            <td class="px-4 py-3"><button class="text-youtube">View Response</button></td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 text-gray-600">2024-01-14 09:15</td>
+                            <td class="px-4 py-3"><span class="provider-badge">UX Pilot</span></td>
+                            <td class="px-4 py-3"><button class="text-youtube">View Prompt</button></td>
+                            <td class="px-4 py-3"><button class="text-youtube">View Response</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script src="llm.js"></script>
+<script src="dashboard.js"></script>
+<script src="vendor/chart.umd.min.js"></script>
+<script src="vendor/fontawesome.min.js"></script>
+<script src="vendor/marked.min.js"></script>
+</body>
+</html> 

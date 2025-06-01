@@ -1,0 +1,40 @@
+{
+    "manifest_version": 3,
+    "name": "YouTube Watch LLM Analyzer",
+    "version": "1.0",
+    "description": "LLM-powered watch history insights with full user control.",
+    "permissions": [
+        "tabs",
+        "scripting",
+        "storage"
+    ],
+    "host_permissions": [
+        "https://www.youtube.com/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_title": "YouTube LLM Analyzer"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://www.youtube.com/feed/history"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "dashboard.html"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
+}

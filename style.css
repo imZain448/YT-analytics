@@ -1,0 +1,305 @@
+/* Color variables */
+:root {
+  --youtube: #FF0000;
+  --cyber-dark: #000000;
+  --cyber-light: #e2e8f0;
+  --cyber-accent: #00f2fe;
+  --accent-blue: #00f2fe;
+  --accent-purple: #8000ff;
+  --accent-green: #00ff9d;
+  --accent-pink: #ff00c1;
+}
+
+body {
+  background: radial-gradient(circle at center, #000000, var(--cyber-dark));
+  color: var(--cyber-light);
+  font-family: 'Inter', 'Roboto', Arial, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* Layout utility classes */
+.flex { display: flex; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.space-x-2 > * + * { margin-left: 0.5rem; }
+.space-x-3 > * + * { margin-left: 0.75rem; }
+.space-x-4 > * + * { margin-left: 1rem; }
+.space-y-3 > * + * { margin-top: 0.75rem; }
+.space-y-4 > * + * { margin-top: 1rem; }
+
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: 1fr; }
+.md\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.lg\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+.lg\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.gap-2 { gap: 0.5rem; }
+.gap-6 { gap: 1.5rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.mb-8 { margin-bottom: 2rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-6 { margin-top: 1.5rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 0.75rem; }
+.p-4 { padding: 1rem; }
+.p-6 { padding: 1.5rem; }
+.max-w-7xl { max-width: 80rem; }
+.w-full { width: 100%; }
+.w-6 { width: 1.5rem; }
+.h-6 { height: 1.5rem; }
+.w-8 { width: 2rem; }
+.h-8 { height: 2rem; }
+.rounded-full { border-radius: 9999px; }
+.rounded-lg { border-radius: 0.5rem; }
+
+/* Typography */
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-lg { font-size: 1.125rem; }
+.text-sm { font-size: 0.875rem; }
+.text-xs { font-size: 0.75rem; }
+.font-bold { font-weight: 700; }
+.font-medium { font-weight: 500; }
+.tracking-wider { letter-spacing: 0.05em; }
+
+.text-gray-900 { color: #18181b; }
+.text-gray-700 { color: #374151; }
+.text-gray-600 { color: #4b5563; }
+.text-gray-500 { color: #6b7280; }
+.text-cyber-light { color: var(--cyber-light); }
+.text-youtube { color: var(--youtube); }
+
+.bg-black { background: #000; }
+.bg-black\/50 { background: rgba(0,0,0,0.5); }
+.bg-gray-50 { background: #f9fafb; }
+.bg-white { background: #fff; }
+.bg-youtube\/10 { background: rgba(255,0,0,0.1); }
+
+.border { border: 1px solid #222; }
+.border-b { border-bottom: 1px solid #222; }
+
+.shadow-lg { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
+
+/* Custom Cards */
+.summary-card, .chart-card, .insights-card, .config-card, .telemetry-card {
+  background: rgba(0,0,0,0.7);
+  border: 2px solid var(--cyber-accent, #00f2fe);
+  color: #fff;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.18);
+  padding: 1.5rem;
+  border-radius: 12px;
+  position: relative;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Neon border effect */
+.summary-card::after, .chart-card::after, .insights-card::after, .config-card::after, .telemetry-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border: 2px solid var(--cyber-accent, #00f2fe);
+  border-radius: 12px;
+  pointer-events: none;
+  box-shadow: 0 0 8px 2px var(--cyber-accent, #00f2fe), 0 0 24px 4px var(--cyber-accent, #00f2fe, 0.2);
+  opacity: 0.7;
+  animation: neonPulse 2s infinite;
+  z-index: 1;
+}
+@keyframes neonPulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+/* Ensure content is above neon border */
+.summary-card > *, .chart-card > *, .insights-card > *, .config-card > *, .telemetry-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Remove forced color on all child elements, but keep text white for contrast */
+.summary-card *, .chart-card *, .insights-card *, .config-card *, .telemetry-card * {
+  color: #fff;
+}
+
+/* Buttons */
+.accent-btn {
+  background: var(--cyber-accent);
+  color: #000;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.accent-btn:hover { background: #00c2c2; }
+.reset-btn {
+  background: #e5e7eb;
+  color: #374151;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.reset-btn:hover { background: #d1d5db; }
+
+/* Category tags */
+.category-tag {
+  background: rgba(255,0,0,0.1);
+  color: var(--youtube);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+}
+
+/* Provider badge */
+.provider-badge {
+  background: #d1fae5;
+  color: #065f46;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+}
+
+/* AI Insights section: dark cards, accent border for recommendation */
+.insight-box {
+  background: rgba(20, 20, 20, 0.95);
+  color: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  border: 1.5px solid rgba(255,255,255,0.08);
+  box-shadow: 0 1px 6px 0 rgba(0,0,0,0.12);
+}
+.recommendation-box {
+  background: rgba(20, 20, 20, 0.95);
+  color: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  border-left: 4px solid var(--cyber-accent, #00f2fe);
+  box-shadow: 0 1px 6px 0 rgba(0,0,0,0.12);
+}
+
+/* Misc */
+.overflow-x-auto { overflow-x: auto; }
+.divide-y > * + * { border-top: 1px solid #e5e7eb; }
+
+/* Hide elements */
+.hidden { display: none !important; }
+
+/* FontAwesome icon sizing */
+.fa-2xl { font-size: 2rem; }
+.fa-xl { font-size: 1.25rem; }
+.fa-lg { font-size: 1.125rem; }
+.fa-sm { font-size: 0.875rem; }
+
+/* Avatar */
+img.rounded-full { border-radius: 9999px; }
+
+/* Z-index */
+.z-50 { z-index: 50; }
+
+/* Absolute positioning */
+.absolute { position: absolute; }
+.right-0 { right: 0; }
+
+/* Table */
+.w-full { width: 100%; }
+.text-left { text-align: left; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+
+/* Custom accent color for theme buttons */
+.bg-\[\#00f2fe\] { background: #00f2fe; }
+.bg-\[\#8000ff\] { background: #8000ff; }
+.bg-\[\#00ff9d\] { background: #00ff9d; }
+.bg-\[\#ff00c1\] { background: #ff00c1; }
+
+/* Misc utility */
+.cursor-pointer { cursor: pointer; }
+.block { display: block; }
+
+/* Responsive (basic, for demo) */
+@media (min-width: 768px) {
+  .md\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .lg\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .lg\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+}
+
+#root {
+  padding: 2rem;
+}
+
+/* Remove forced light color for all .text-gray-* globally */
+.text-gray-900, .text-gray-700, .text-gray-600, .text-gray-500 {
+  color: inherit;
+}
+
+/* Accent color buttons in top bar */
+.accent-picker {
+  display: flex;
+  gap: 0.5rem;
+}
+.accent-btn-circle {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+  border: 2px solid #fff;
+  cursor: pointer;
+  transition: border 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+}
+.accent-btn-circle:hover, .accent-btn-circle.selected {
+  border: 2.5px solid var(--cyber-accent, #00f2fe);
+  box-shadow: 0 0 0 4px var(--cyber-accent, #00f2fe, 0.2);
+}
+
+/* AI Insights Tabs Styling */
+.insights-tabs {
+  border-bottom: 2px solid var(--cyber-accent, #00f2fe);
+  margin-bottom: 1rem;
+}
+.insights-tab {
+  background: transparent;
+  color: var(--cyber-accent, #00f2fe);
+  border: none;
+  outline: none;
+  padding: 0.5rem 1.5rem;
+  margin-right: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 999px 999px 0 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  position: relative;
+  top: 2px;
+}
+.insights-tab.active {
+  background: var(--cyber-accent, #00f2fe);
+  color: #18181b;
+  box-shadow: 0 2px 8px 0 var(--cyber-accent, #00f2fe)33;
+  z-index: 1;
+}
+.insights-tab:not(.active):hover {
+  background: rgba(0,242,254,0.08);
+  color: #fff;
+}
+
+.insights-md-h1, .insights-md-h2, .insights-md-h3 {
+  color: var(--cyber-accent, #00f2fe);
+  font-weight: 700;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+}
+.insights-md-h1 { font-size: 2rem; }
+.insights-md-h2 { font-size: 1.5rem; }
+.insights-md-h3 { font-size: 1.2rem; } 
