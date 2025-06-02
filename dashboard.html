@@ -49,6 +49,14 @@
     </div>
 </nav>
 
+<!-- Add a small button at the top to link to YouTube watch history -->
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-white">YouTube LLM Analyzer</h1>
+    <a href="https://www.youtube.com/feed/history" target="_blank" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
+        <i class="fas fa-history mr-2"></i>Watch History
+    </a>
+</div>
+
 <!-- Main Dashboard -->
 <main id="dashboard" class="p-6 max-w-7xl mx-auto">
     <!-- Analytics Summary Cards -->
@@ -57,7 +65,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500">Watch Time This Month</p>
-                    <p class="text-2xl font-bold text-gray-900">142.5h</p>
+                    <p id = "watch-time" class="text-2xl font-bold text-gray-900">142.5h</p>
                 </div>
                 <i class="fa-solid fa-clock text-youtube text-2xl"></i>
             </div>
@@ -66,7 +74,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500">Most Watched Genre</p>
-                    <p class="text-2xl font-bold text-gray-900">Education</p>
+                    <p id = "most-watched-genre" class="text-2xl font-bold text-gray-900">Education</p>
                 </div>
                 <i class="fa-solid fa-graduation-cap text-youtube text-2xl"></i>
             </div>
@@ -75,7 +83,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500">Top Channel</p>
-                    <p class="text-2xl font-bold text-gray-900">TechCrunch</p>
+                    <p id = "top-channel" class="text-2xl font-bold text-gray-900">TechCrunch</p>
                 </div>
                 <i class="fa-solid fa-star text-youtube text-2xl"></i>
             </div>
@@ -84,7 +92,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500">Videos Watched</p>
-                    <p class="text-2xl font-bold text-gray-900">1,247</p>
+                    <p id = "videos-watched" class="text-2xl font-bold text-gray-900">1,247</p>
                 </div>
                 <i class="fa-solid fa-play text-youtube text-2xl"></i>
             </div>
@@ -171,15 +179,19 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">LLM Provider</label>
-                    <select class="w-full p-3 border bg-black/50 text-cyber-light" id="llm-provider-select">
+                    <select class="w-full p-3 border bg-black/50 text-cyber-light rounded" id="llm-provider-select">
                         <option value="openai">OpenAI</option>
                         <option value="claude">Claude</option>
                         <option value="gemini">Gemini</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
-                    <input type="password" placeholder="Enter your API key" class="w-full p-3 border bg-black/50 text-cyber-light">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">LLM API Key</label>
+                    <input type="password" id="llm-api-key" placeholder="Enter your LLM API key" class="w-full p-3 border bg-black/50 text-cyber-light rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">YouTube API Key</label>
+                    <input type="password" id="youtube-api-key" placeholder="Enter your YouTube API key" class="w-full p-3 border bg-black/50 text-cyber-light rounded">
                 </div>
             </div>
             <div class="space-y-4">
@@ -258,5 +270,6 @@
 <script src="vendor/chart.umd.min.js"></script>
 <script src="vendor/fontawesome.min.js"></script>
 <script src="vendor/marked.min.js"></script>
+<script src="analytics.js"></script>
 </body>
 </html> 

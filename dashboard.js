@@ -1,6 +1,8 @@
 // dashboard.js - Handles dashboard UI logic and interactivity
 console.log('dashboard.js loaded');
 
+// Import analytics function
+
 function setupAccentColorButtons() {
     const accentButtons = document.querySelectorAll('.accent-btn-circle');
     accentButtons.forEach(btn => {
@@ -137,6 +139,24 @@ function setupDashboardEventListeners() {
 
     // Tab switching for AI Insights
     setupInsightsTabs();
+
+    // Save Configuration
+    document.getElementById('save-test-btn').addEventListener('click', function () {
+        const provider = document.getElementById('llm-provider-select').value;
+        const llmApiKey = document.getElementById('llm-api-key').value;
+        const youtubeApiKey = document.getElementById('youtube-api-key').value;
+
+        if (llmApiKey && youtubeApiKey) {
+            chrome.storage.local.set({
+                [provider]: llmApiKey,
+                yt_api_key: youtubeApiKey
+            }, function () {
+                alert('Configuration saved!');
+            });
+        } else {
+            alert('Please enter valid API keys for both LLM and YouTube.');
+        }
+    });
 }
 
 if (document.readyState === 'loading') {
@@ -256,6 +276,83 @@ function setupInsightsTabs() {
             if (tabContents[tab]) tabContents[tab].classList.remove('hidden');
         });
     });
+}
+
+// Function to update analytics in the dashboard
+function updateAnalytics() {
+    const today = new Date().toISOString().slice(0, 10);
+    chrome.storage.local.get([today], function (data) {
+        const history = data[today] || [];
+        calculateAnalytics(history).then(analytics => {
+            // Store analytics in local storage
+            chrome.storage.local.set({ analytics }, function () {
+                console.log('Analytics stored:', analytics);
+            });
+
+            // Update UI with analytics
+            const watchHoursElement = document.getElementById('watch-hours');
+            const numVideosElement = document.getElementById('num-videos');
+            const topChannelElement = document.getElementById('top-channel');
+            const topGenreElement = document.getElementById('top-genre');
+
+            if (watchHoursElement) watchHoursElement.textContent = analytics.watchHours;
+            if (numVideosElement) numVideosElement.textContent = analytics.numVideos;
+            if (topChannelElement) topChannelElement.textContent = analytics.topChannel;
+            if (topGenreElement) topGenreElement.textContent = analytics.topGenre;
+
+            // Update summary cards
+            document.getElementById('watch-time').textContent = analytics.watchHours ? analytics.watchHours + 'h' : '0.00h';
+            document.getElementById('most-watched-genre').textContent = analytics.topGenre;
+            document.getElementById('top-channel').textContent = analytics.topChannel;
+            document.getElementById('videos-watched').textContent = analytics.numVideos;
+
+            // Update chart sections if needed
+            // Example: Update daily chart with new data
+            const dailyCtx = document.getElementById('dailyChart')?.getContext('2d');
+            if (dailyCtx) {
+                // Destroy existing chart if it exists
+                if (window.dailyChart) {
+                    window.dailyChart.destroy();
+                }
+                // Example data update logic
+                const dailyData = [analytics.numVideos, 0, 0, 0, 0, 0, 0]; // Replace with actual data
+                window.dailyChart = new Chart(dailyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            data: dailyData,
+                            backgroundColor: '#FF0000',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: 'rgba(0, 255, 0, 0.1)' },
+                                ticks: { color: '#e2e8f0' }
+                            },
+                            x: {
+                                grid: { color: 'rgba(0, 255, 0, 0.1)' },
+                                ticks: { color: '#e2e8f0' }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    });
+}
+
+// Call updateAnalytics when dashboard loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateAnalytics);
+} else {
+    updateAnalytics();
 }
 
 // document.getElementById('root').innerText = 'YouTube LLM Analyzer Dashboard (UI coming soon)'; 

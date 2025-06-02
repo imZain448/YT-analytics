@@ -18,7 +18,10 @@ function scrapeVisibleHistory() {
         // Timestamp (if available)
         const timeEl = item.querySelector('div#metadata-line span');
         const timestamp = timeEl ? timeEl.textContent.trim() : '';
-        return { title, channel, url, thumbnail, timestamp };
+        // Description
+        const descEl = item.querySelector('#description-text');
+        const description = descEl ? descEl.textContent.trim() : '';
+        return { title, channel, url, thumbnail, timestamp, description };
     });
     console.log('YouTube Watch History (visible):', results);
     return results;
@@ -36,7 +39,7 @@ function storeTodayHistory(newItems) {
                 merged.push(item);
             }
         });
-        chrome.storage.local.set({ [today]: merged }, () => {
+        chrome.storage.local.set({ [today]: newItems }, () => {
             console.log('Updated YouTube Watch History for', today, merged);
         });
     });
