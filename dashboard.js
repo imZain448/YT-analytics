@@ -122,6 +122,12 @@ function setupDashboardEventListeners() {
     }
 
     // 6. Re-run Analysis button
+
+    const mdContainer = document.getElementById('insights-markdown');
+    if (chrome.storage.local.get("insights")) {
+        mdContainer.innerHTML = `<div class="insight-box">${window.marked.parse(chrome.storage.local.get("insights"))}</div>`;
+    }
+
     const rerunBtn = document.getElementById('rerun-analysis-btn');
     if (rerunBtn) {
         rerunBtn.addEventListener('click', runLLMAnalysis);
@@ -240,6 +246,9 @@ async function runLLMAnalysis() {
                 if (text) {
                     // Render markdown in Overview tab using marked
                     const mdContainer = document.getElementById('insights-markdown');
+                    chrome.storage.local.set({ "insights": text }, function () {
+                        console.log('Insights stored:', text);
+                    });
                     if (mdContainer && window.marked) {
                         mdContainer.innerHTML = `<div class="insight-box">${window.marked.parse(text)}</div>`;
                     }

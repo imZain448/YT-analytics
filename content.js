@@ -13,6 +13,7 @@ function scrapeVisibleHistory() {
         // Video URL
         const url = titleEl ? titleEl.href : '';
         // Thumbnail
+        const isShort = url.match(/(?:v=|shorts\/)([\w-]+)/)?.[1];
         const thumbEl = item.querySelector('img#img');
         const thumbnail = thumbEl ? thumbEl.src : '';
         // Timestamp (if available)
@@ -21,7 +22,10 @@ function scrapeVisibleHistory() {
         // Description
         const descEl = item.querySelector('#description-text');
         const description = descEl ? descEl.textContent.trim() : '';
-        return { title, channel, url, thumbnail, timestamp, description };
+
+        const watchedPercentage = getWatchedPercentage(item);
+
+        return { title, channel, url, thumbnail, timestamp, description, watchedPercentage: watchedPercentage.watchedPercentage };
     });
     console.log('YouTube Watch History (visible):', results);
     return results;
@@ -39,10 +43,22 @@ function storeTodayHistory(newItems) {
                 merged.push(item);
             }
         });
-        chrome.storage.local.set({ [today]: newItems }, () => {
+        chrome.storage.local.set({ [today]: merged }, () => {
             console.log('Updated YouTube Watch History for', today, merged);
         });
     });
+}
+
+function getWatchedPercentage(item) {
+    const titleEl = item.querySelector('#video-title');
+    const channelEl = item.querySelector('ytd-channel-name');
+    const link = titleEl?.href;
+    const videoId = link?.match(/v=([\w-]+)/)?.[1];
+
+    const thumbnailProgress = item.querySelector('.ytd-thumbnail-overlay-resume-playback-renderer');
+    const progressStyle = thumbnailProgress?.style?.width; // e.g., "57%"
+
+    return { watchedPercentage: progressStyle || null };
 }
 
 async function autoScrapeHistory(maxScrolls = 30, delay = 1200) {

@@ -49,30 +49,64 @@ const categoryMap = {
 async function calculateAnalytics(history) {
     const numVideos = history.length;
 
-    // Fetch metadata for each video
-    const metadataPromises = history.map(item => fetchVideoMetadata(item.url));
+    // Fetch metadata for each video with explicit URL tracking
+    const metadataPromises = history.map(item =>
+        fetchVideoMetadata(item.url).then(metadata => ({
+            url: item.url,
+            metadata: metadata
+        }))
+    );
     const metadataResults = await Promise.all(metadataPromises);
 
-    // Calculate watch hours from metadata
-    const totalSeconds = metadataResults.reduce((sum, metadata) => {
-        if (metadata && metadata.duration) {
+    let totalWatchedHours = 0;
+
+    for (const result of metadataResults) {
+        const metadata = result.metadata;
+        const historyItem = history.find(item => item.url === result.url);
+
+        if (metadata && metadata.duration && historyItem) {
+            console.log(metadata);
             const duration = metadata.duration;
             const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
             const hours = parseInt(match[1] || 0);
             const minutes = parseInt(match[2] || 0);
             const seconds = parseInt(match[3] || 0);
-            return sum + (hours * 3600) + (minutes * 60) + seconds;
+            const durationInHours = ((hours * 3600) + (minutes * 60) + seconds) / 3600;
+            console.log(`durationInHours: ${durationInHours}`);
+            let watchedPercentage = historyItem.watchedPercentage;
+            if (watchedPercentage != null && watchedPercentage != '0%') {
+                console.log(`watchedPercentage: ${watchedPercentage}`);
+                watchedPercentage = parseFloat(watchedPercentage.match(/(\d+)%/)?.[1] || 0);
+                console.log(`watchedPercentage: ${watchedPercentage}`);
+                const watchedHours = durationInHours * watchedPercentage / 100;
+                totalWatchedHours += watchedHours;
+            }
         }
-        return sum;
-    }, 0);
-    const watchHours = (totalSeconds / 3600).toFixed(2);
+    }
+    const watchHours = totalWatchedHours.toFixed(2);
+
+    // Calculate watch hours from metadata
+    // const totalSeconds = metadataResults.reduce((sum, metadata) => {
+    //     if (metadata && metadata.duration) {
+    //         const duration = metadata.duration;
+    //         const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+    //         const hours = parseInt(match[1] || 0);
+    //         const minutes = parseInt(match[2] || 0);
+    //         const seconds = parseInt(match[3] || 0);
+    //         return sum + (hours * 3600) + (minutes * 60) + seconds;
+    //     }
+    //     return sum;
+    // }, 0);
+    // const watchedPercentage = history.reduce((sum, ite
+    // const watchHours = (totalSeconds / 3600 * item.watchedPercentage).toFixed(2);
 
     // Top channel
     const channelCounts = groupBy(history, 'channel');
     const topChannel = cleanText(Object.entries(channelCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A');
 
     // Top genre (if available)
-    const genreCounts = groupBy(metadataResults, 'categoryId');
+    const metadataOnly = metadataResults.map(result => result.metadata).filter(Boolean);
+    const genreCounts = groupBy(metadataOnly, 'categoryId');
     const topGenreId = Object.entries(genreCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
     const topGenre = categoryMap[topGenreId] || 'N/A';
 
